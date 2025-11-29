@@ -29,6 +29,11 @@ local function findSeedCellStorage()
             return i
         end
     end
+
+    if action.needCharge() then
+        action.charge()
+    end
+
     return -1
 end
 
@@ -109,6 +114,7 @@ local function collectOnce()
     collectSeeds()
     freeInventory()
     action.charge()
+    print("Collect complete!")
     events.unhookEvents()
 end
 
