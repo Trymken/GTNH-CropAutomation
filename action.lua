@@ -89,6 +89,7 @@ end
 
 
 function dumpInventory()
+    dumpFilterInventory(config.seedStoragePos, true, 'IC2:itemCropSeed')
     dumpFilterInventory(config.stickContainerPos, true, 'IC2:blockCrop')
     dumpFilterInventory(config.storagePos, false, '')
 end

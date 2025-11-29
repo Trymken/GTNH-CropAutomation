@@ -11,13 +11,6 @@ local spread = require('spread')
 local inventory_controller = component.inventory_controller
 
 
-local function freeInventory()
-    action.dumpFilterInventory(config.seedStoragePos, true, 'IC2:itemCropSeed')
-    action.dumpFilterInventory(config.stickContainerPos, true, 'IC2:blockCrop')
-    action.dumpFilterInventory(config.storagePos, false, '')
-end
-
-
 local function findSeedCellStorage()
     for i = 1, config.storageFarmArea, 1 do
         gps.go(gps.storageSlotToPos(i))
@@ -29,22 +22,22 @@ local function findSeedCellStorage()
             return i
         end
     end
-
-    if action.needCharge() then
-        action.charge()
-    end
-
     return -1
 end
 
 
 local function collectSeeds()
-    local seedCell = 0
+    local seedCell = 1
     local harvestedCrop = 1
     local isFirstRun = true
 
     while(true) do
         local slot = 1
+
+        if action.needCharge() then
+            action.charge()
+        end
+
         seedCell = findSeedCellStorage()
 
         if (seedCell == -1) then
@@ -74,8 +67,8 @@ local function collectSeeds()
                 harvestedCrop = harvestedCrop + 1
             end
 
-            if harvestedCrop % config.maxHarvests + 1 == 0 then
-                freeInventory()
+            if harvestedCrop % (config.maxHarvests + 1) == 0 then
+                action.dumpInventory()
                 harvestedCrop = 1
             end
 
@@ -112,7 +105,7 @@ end
 local function collectOnce()
     action.initWork()
     collectSeeds()
-    freeInventory()
+    action.dumpInventory()
     action.charge()
     print("Collect complete!")
     events.unhookEvents()
@@ -120,9 +113,9 @@ end
 
 
 return {
-    freeInventory = freeInventory,
     findSeedCellStorage = findSeedCellStorage,
     collectSeeds = collectSeeds,
     collectMain = collectMain,
     collectOnce = collectOnce
 }
+

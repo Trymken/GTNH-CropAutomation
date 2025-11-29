@@ -113,7 +113,7 @@ local function spreadOnce(firstRun, breedRound, targetCrop)
             database.updateFarm(slot, crop)
             if slot == 1 then
                 targetCrop[0] = database.getFarm()[1].name
-                print(string.format('autoSpread: Target %s', targetCrop))
+                print(string.format('autoSpread: Target %s', targetCrop[0]))
             end
         end
 

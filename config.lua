@@ -36,7 +36,7 @@ local config = {
     -- Max breeding round before termination of autoSpread or autoTier
     maxBreedRound = 1000,
     -- Max harvests before putting seeds in the chest
-    maxHarvests = 5,
+    maxHarvests = 7,
 
     -- =========== DO NOT CHANGE ===========
 
