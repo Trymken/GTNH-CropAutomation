@@ -170,6 +170,7 @@ local function main()
     -- Finish
     if config.cleanUp then
         action.cleanUp()
+        action.restockAll()
     end
 
     events.unhookEvents()

@@ -35,6 +35,8 @@ local config = {
     needChargeLevel = 0.2,
     -- Max breeding round before termination of autoSpread or autoTier
     maxBreedRound = 1000,
+    -- Max harvests before putting seeds in the chest
+    maxHarvests = 5,
 
     -- =========== DO NOT CHANGE ===========
 
@@ -48,6 +50,8 @@ local config = {
     relayFarmlandPos = {1, 1},
     -- The coordinate for the transvector dislocator
     dislocatorPos = {1, 2},
+    -- The coordinate for the seed storage chest
+    seedStoragePos = {-3, 0},
 
     -- The slot for the spade
     spadeSlot = 0,

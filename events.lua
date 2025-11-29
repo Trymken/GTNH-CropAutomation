@@ -54,6 +54,10 @@ local function setNeedCleanup(value)
     needCleanupFlag = value
 end
 
+local function setNeedExitFlag(value)
+    needExitFlag = value
+end
+
 
 return {
     initEvents = initEvents,
@@ -61,5 +65,6 @@ return {
     unhookEvents = unhookEvents,
     needExit = needExit,
     needCleanup = needCleanup,
-    setNeedCleanup = setNeedCleanup
+    setNeedCleanup = setNeedCleanup,
+    setNeedExitFlag = setNeedExitFlag
 }

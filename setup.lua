@@ -3,6 +3,8 @@ local args = {...}
 local branch
 local repo
 local scripts = {
+    'spread.lua',
+    'collect.lua',
     'action.lua',
     'database.lua',
     'events.lua',
@@ -12,6 +14,8 @@ local scripts = {
     'autoStat.lua',
     'autoTier.lua',
     'autoSpread.lua',
+    'autoCollect.lua',
+    'collectOnce.lua',
     'uninstall.lua'
 }
 
@@ -26,7 +30,7 @@ end
 if #args >= 2 then
     repo = args[2]
 else
-    repo = 'https://raw.githubusercontent.com/DylanTaylor1/GTNH-CropAutomation/'
+    repo = 'https://raw.githubusercontent.com/Trymken/GTNH-CropAutomation/'
 end
 
 -- INSTALL

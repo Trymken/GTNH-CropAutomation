@@ -10,7 +10,7 @@ local scanner = require('scanner')
 local events = require('events')
 local inventory_controller = component.inventory_controller
 local redstone = component.redstone
-local restockAll, cleanUp  -- Forward declaration
+local restockAll, cleanUp, charge, dumpInventory  -- Forward declaration
 
 
 local function needCharge()
@@ -33,6 +33,16 @@ local function fullInventory()
 end
 
 
+local function stopProgram(msg)
+    print(msg)
+    cleanUp()
+    dumpInventory()
+    charge()
+    print("The program has stopped!")
+    os.exit(0)
+end
+
+
 local function restockStick()
     local selectedSlot = robot.select()
     gps.go(config.stickContainerPos)
@@ -46,21 +56,28 @@ local function restockStick()
         end
     end
 
+    if robot.count() < 64 then
+        robot.select(selectedSlot)
+        stopProgram("Not enough sticks, refill the storage!")
+    end
+
     robot.select(selectedSlot)
 end
 
 
-local function dumpInventory()
+local function dumpFilterInventory(pos, useItem, itemName)
     local selectedSlot = robot.select()
-    gps.go(config.storagePos)
+    gps.go(pos)
 
     for i=1, (robot.inventorySize() + config.storageStopSlot) do
         os.sleep(0)
-        if robot.count(i) > 0 then
+        local slot_item = inventory_controller.getStackInInternalSlot(i)
+        if slot_item ~= nil and not (useItem == true and slot_item.name ~= itemName) then
             robot.select(i)
             for e=1, inventory_controller.getInventorySize(sides.down) do
-                if inventory_controller.getStackInSlot(sides.down, e) == nil then
+                if (robot.count(i) > 0) then
                     inventory_controller.dropIntoSlot(sides.down, e)
+                else
                     break
                 end
             end
@@ -68,6 +85,12 @@ local function dumpInventory()
     end
 
     robot.select(selectedSlot)
+end
+
+
+function dumpInventory()
+    dumpFilterInventory(config.stickContainerPos, true, 'IC2:blockCrop')
+    dumpFilterInventory(config.storagePos, false, '')
 end
 
 
@@ -199,7 +222,6 @@ function cleanUp()
         robot.suckDown()
     end
     events.setNeedCleanup(false)
-    restockAll()
 end
 
 
@@ -219,7 +241,7 @@ local function primeBinder()
 end
 
 
-local function charge()
+function charge()
     gps.go(config.chargerPos)
     gps.turnTo(1)
     repeat
@@ -228,6 +250,7 @@ local function charge()
             if events.needCleanup() and config.cleanUp then
                 events.setNeedCleanup(false)
                 cleanUp()
+                restockAll()
             end
             os.exit() -- Exit here to leave robot in starting position
         end
@@ -256,6 +279,7 @@ return {
     needCharge = needCharge,
     charge = charge,
     restockStick = restockStick,
+    dumpFilterInventory = dumpFilterInventory,
     dumpInventory = dumpInventory,
     restockAll = restockAll,
     placeCropStick = placeCropStick,
