@@ -1,2 +1,2 @@
 local collect = require('collect')
-collect.simpleCollect()
+collect.collectOnce()
