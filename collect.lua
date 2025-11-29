@@ -35,7 +35,7 @@ end
 
 local function collectSeeds()
     local seedCell = 0
-    local harvestedCrop = 0
+    local harvestedCrop = 1
     local isFirstRun = true
 
     while(true) do
@@ -69,9 +69,9 @@ local function collectSeeds()
                 harvestedCrop = harvestedCrop + 1
             end
 
-            if harvestedCrop % config.maxHarvests == 0 then
+            if harvestedCrop % config.maxHarvests + 1 == 0 then
                 freeInventory()
-                harvestedCrop = 0
+                harvestedCrop = 1
             end
 
             if action.needCharge() then
