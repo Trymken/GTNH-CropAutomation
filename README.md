@@ -1,8 +1,8 @@
 # Introduction
 
-These OpenComputers (OC) scripts automatically tier-up, stat-up, and spread (duplicate) IC2 crops for you. This guide walks through every step of the process, from building the crop bot to debugging and troubleshooting. No prior knowledege of OC is necessary.
+These OpenComputers (OC) scripts automatically tier-up, collect, stat-up, and spread (duplicate) IC2 crops for you. This guide walks through every step of the process, from building the crop bot to debugging and troubleshooting. No prior knowledege of OC is necessary.
 
-The general idea is that the crop bot runs one of three executable programs while regularly checking and maintaining a **working farm** of crops (placing crop sticks, removing weeds, etc.). When necessary, it will move crops around entirely on its own through the use of a Transvector Dislocator. The ultimate goal of the crop bot is to populate a **storage farm** full of high-stat crops to be used elsewhere for harvesting. There is no player intervention beyond supplying the crop bot with crop sticks, activating the crop bot, and collecting the final products.
+The general idea is that the crop bot runs one of five executable programs while regularly checking and maintaining a **working farm** of crops (placing crop sticks, removing weeds, etc.). When necessary, it will move crops around entirely on its own through the use of a Transvector Dislocator. The ultimate goal of the crop bot is to populate a **storage farm** full of high-stat crops to be used elsewhere for harvesting. There is no player intervention beyond supplying the crop bot with crop sticks, activating the crop bot, and collecting the final products.
 
 Is this even worth it? Consider, for example, a field of 1/1/1 stickreed and another field of 21/31/0 stickreed. Keep every other variable constant and the high-stat field produces sticky resin **8x faster** than the low-stat one. That is a very significant difference for the time it takes to build and use the crop bot.
 
@@ -44,7 +44,7 @@ Lastly, you need a Transvector Binder and Transvector Dislocator which requires 
 7) Follow the commands on screen 'install' --> 'Y' --> 'Y' (The OpenOS floppy disk is no longer needed in the robot afterwards).
 8) Install the required scripts by copying this line of code into the robot (middle-click to paste).
 
-        wget https://raw.githubusercontent.com/DylanTaylor1/GTNH-CropAutomation/main/setup.lua && setup
+        wget https://raw.githubusercontent.com/Trymken/GTNH-CropAutomation/main/setup.lua && setup
 
 9) Edit the config (not recommended, but check it out) by entering:
 
@@ -58,23 +58,23 @@ Lastly, you need a Transvector Binder and Transvector Dislocator which requires 
 
 **Find a location with good environmental stats**. It is recommended to set everything up in a Jungle or Swamp biome at Y=130 as that will give you the highest humidity and air quality stats. If not, crops run the risk of randomly dying and leaving the farms susceptible to weeds. This is most easily done in a personal dimension which you earn as a quest reward from reaching the moon. Do not place any solid blocks above the farm as that will reduce the air quality. All of the machines on the surface are waterproof so do not worry about the rain. Use vanilla dirt because that will allow you to grow crops that require a particular block underneath, and boost the nutrient stat of your crops. The whole farm can easily fit into a single chunk for easy chunk loading.
 
-**You may change both the size of the working farm and the size of the storage farm** in the config (default is 6x6 and 9x9, respectively). Larger working farm sizes will extend left and up while larger storage farm sizes will extend down and to the right (see image below). The top row of the working farm will always align with the top row of the storage farm. There is no maximum or minimum size for either farm and it does not matter if the lengths are even or odd. However, larger storage farms leave the working farm more susceptible to weeds because the robot has to travel farther when transporting crops and less time is spent scanning the working farm. The transvector dislocator also has a maximum range of 16 blocks. Changing anything in the config requires you to restart your robot.
+**You may change both the size of the working farm and the size of the storage farm** in the config (default is 6x6 and 9x9, respectively). Larger working farm sizes will extend left and up while larger storage farm sizes will extend down and to the right (see image below). The top row of the working farm will always align with the top row of the storage farm. There is no maximum or minimum size for either farm and it does not matter if the lengths are even or odd. However, larger storage farms leave the working farm more susceptible to weeds because the robot has to travel farther when transporting crops and less time is spent scanning the working farm. The transvector dislocator also has a maximum range of 16 blocks. ***Changing anything in the config requires you to restart your robot***.
 
 ![Farm Top](media/Farm_Top.png?)
 
 ![Farm Side](media/Farm_Side.png?)
 
-First note the orientation of the robot sitting atop the OC charger. It must face towards the right-most column of the working farm. Adjacent to the OC charger is the crop stick chest which can be a few things: any sort of large chest, a JABBA barrel, or storage drawer (orientation does not matter). If the crop stick chest is ever empty, bad things will happen. Next to that is a Trash Can for any random drops that the robot picks up such as weeds, seed bags, and crop sticks but this can be swapped with another chest to recycle some of the materials. The transvector dislocator sits facing the top of the blank farmland (where a crop would go). You can tell which direction the transvector dislocator is facing by the side that is animated. The blank farmland itself acts as a buffer between the working and storage farms. Lastly, a crop-matron sits one y-level lower than the OC charger and hydrates most of the crops which boosts their stats and helps them grow faster.
+First note the orientation of the robot sitting atop the OC charger. It must face towards the right-most column of the working farm. Adjacent to the OC charger is the crop stick chest which can be a few things: any sort of large chest, a JABBA barrel, or storage drawer (orientation does not matter). If the crop stick chest is ever empty, the robot will stop performing its actions. Next to that is a Trash Can for any random things that the robot picks up such as weeds, harvest from seeds but this can be swapped with another chest to recycle some of the materials. The transvector dislocator sits facing the top of the blank farmland (where a crop would go). You can tell which direction the transvector dislocator is facing by the side that is animated. The blank farmland itself acts as a buffer between the working and storage farms. Lastly, a Crop Manager sits one y-level lower than the OC charger and hydrates most of the crops which boosts their stats and helps them grow faster.
 
 **The location of the water is completely flexible**. They do not have to be in the same locations as in the photo (underneath all five grates) and you can have as many as you would like on both the working farm and storage farm. However, there MUST be a block on top of each water and no two can be next to each other. The block can be literally anything, even a lily pad will work, so long as there is something. It is also possible to use garden soil or fertilized dirt and have absolutely no water on the farms at all, but this will sacrifice a few nutrient stats and bar you from growing crops that require a particular block underneath.
 
-**The starting crops must be placed manually in the checkerboard pattern** seen in the photo. This layout goes for all three programs. If you cannot fill the entire checkerboard to start, the absolute minimum required is two (one as the target crop and the other next to it for crossbreeding). Even worse, if you have just a single seed of your target crop, it is possible to start with a different crop next to it for crossbreeding (ie. Stickreed). It is not necessary to place empty crop sticks to fill the rest of the checkerboard. The target crop is used by autoStat and autoSpread to identify the crop you want to stat-up or spread to the storage farm, respectively.
+**The starting crops must be placed manually in the checkerboard pattern** seen in the photo. This layout goes for all five programs. If you cannot fill the entire checkerboard to start, the absolute minimum required is two (one as the target crop and the other next to it for crossbreeding). Even worse, if you have just a single seed of your target crop, it is possible to start with a different crop next to it for crossbreeding (ie. Stickreed). It is not necessary to place empty crop sticks to fill the rest of the checkerboard. The target crop is used by autoStat, autoCollect and autoSpread to identify the crop you want to stat-up or spread to the storage farm, respectively.
 
 ![Farm Bottom](media/Farm_Bottom.png?)
 
 **Underneath the farm**, you can see that there are three additional dirt blocks below each farmland, each of which add to the nutrient stat of the crop above it. For crops requiring a block underneath, that should be placed at the bottom. In this case, I have diareed planted on top which means I have one farmland --> two dirt --> one diamond block underneath each one. I do not have diamond blocks underneath the working farm because the diareed does not need to be fully grown in order to spread.
 
-**For power**, I am using an HV gas turbine and a super tank with some benzene (no transformer needed). This is a little overkill, but the important part is that the charger is always at 100% charging speed which you can see by hovering over it. A set-up such as this will last forever with a few hundred thousand benzene since both machines require very little EU/t. Lastly, a reservoir feeds water into the crop-matron automatically after right-clicking it with a wrench.
+**For power**, I am using an HV gas turbine and a super tank with some benzene (no transformer needed). This is a little overkill, but the important part is that the charger is always at 100% charging speed which you can see by hovering over it. A set-up such as this will last forever with a few hundred thousand benzene since both machines require very little EU/t. Lastly, a reservoir feeds water into the Crop Manager automatically after right-clicking it with a wrench.
 
 # Running the Programs
 
@@ -89,6 +89,14 @@ The second program **autoStat** automatically stats-up the target crop until the
 The third program **autoSpread** automatically spreads (duplicates) the target crop until the storage farm is full. New crops are only moved to the storage farm if their Gr + Ga - Re is at least 50 (configurable). The maximum growth and resistance stats for child crops are also configurable parameters which default to 23 and 2, respectively. To run, simply enter:
 
     autoSpread
+
+The fourth program **autoCollect** automatically spreads (duplicates) the target crop until the storage farm is full and then collects the seeds in the seed storage. **\<steps\>** number of program execution cycles. As long as there is at least one plant in the storage, the robot will try to collect it. After collecting, it will check the storage for seeds, if there are none, it will begin spread.
+
+    autoCollect <steps>
+
+The fifth program **collectOnce** collects seeds from the storage farm once without spread.
+
+    collectOnce
 
 (Optional) Disable useStorageFarm in the config to harvest child crops on the working farm during autoSpread instead of moving them to the storage farm. They are only harvested once they reach their maximum growth stage - 1 for the best chances at dropping seeds. Everything is deposited in the storage chest, including other types of seeds and those that do not meet the autoSpreadThreshold. This setting also causes autoSpread to run until the maximum breeding round is reached which means a single iteration can collect hundreds of seeds. It is recommended to use a full-block ME interface as the storage chest if using this method.
 
@@ -155,15 +163,12 @@ To uninstall all of the files from this repo, enter
 
 To view an entire error message regardless of how long it may be, enter
 
-    <program> 2>/errors.log
+    <program name> 2>/errors.log
 
     edit /errors.log
 
 ## Current Limitations
-- The crop bot does not store any seed bags directly. The total amount of stored crops is limited by the size of the storage farm.
 - The crop bot cannot create 31/31/0 seed bags for the Extreme Industrial Greenhouse since any crop with >24 growth acts as a weed.
-- The crop bot does not till any grass or dirt even if a farm is overtaken by weeds.
-- The crop bot does not detect when it runs out of crop sticks.
 
 ## Thanks
-Huge thanks to huchenlei and xyqyear for their initial implementations and letting me take this project even further! Shoutout to Mozzg for also contributing to the repo!
+Huge thanks to huchenlei, Mozzg, DylanTaylor1 and xyqyear for their initial implementations.

@@ -62,7 +62,7 @@ local function collectSeeds()
 
             gps.go(gps.storageSlotToPos(slot))
             local crop = scanner.scan()
-            if crop.isCrop and crop.name ~= 'air' and crop.size == crop.max then
+            if crop.isCrop and crop.name ~= 'air' and crop.size >= (crop.max - 1) then
                 action.harvest()
                 harvestedCrop = harvestedCrop + 1
             end
@@ -118,4 +118,3 @@ return {
     collectMain = collectMain,
     collectOnce = collectOnce
 }
-
