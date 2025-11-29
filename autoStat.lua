@@ -93,6 +93,7 @@ local function checkParent(slot, crop, firstRun)
                 updateLowest()
             end
         end
+        database.updateFarm(slot, crop)
     end
 end
 
@@ -100,6 +101,8 @@ end
 
 local function statOnce(firstRun)
     for slot=1, config.workingFarmArea, 1 do
+
+        
 
         -- Terminal Condition
         if #database.getStorage() >= config.storageFarmArea then
