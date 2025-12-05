@@ -64,14 +64,33 @@ local function restockStick()
     robot.select(selectedSlot)
 end
 
+
+local function isTargetCrop(slot)
+    if (slot ~= nil) then
+        if slot.crop ~= nil then
+            if (slot.crop.name == database.getFarm()[1].name) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+
 local function dumpFilterInventory(pos, useItem, itemName)
     local selectedSlot = robot.select()
+    local onlyTarget = true
     gps.go(pos)
 
     for i=1, (robot.inventorySize() + config.storageStopSlot) do
         os.sleep(0)
         local slot_item = inventory_controller.getStackInInternalSlot(i)
-        if slot_item ~= nil and not (useItem and (slot_item.name ~= itemName)) and not (config.collectOnlyTarget and (slot_item.crop == nil and slot_item.crop.name ~= database.getFarm()[1].name)) then
+        
+        if (config.collectOnlyTarget) then
+            onlyTarget = isTargetCrop(slot_item)
+        end
+
+        if slot_item ~= nil and not (useItem and (slot_item.name ~= itemName)) and onlyTarget then
             robot.select(i)
             for e=1, inventory_controller.getInventorySize(sides.down) do
                 if (robot.count(i) > 0) then
