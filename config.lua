@@ -54,6 +54,8 @@ local config = {
     dislocatorPos = {1, 2},
     -- The coordinate for the seed storage chest
     seedStoragePos = {-3, 0},
+    -- The coordinate for the targetCrop 
+    targetCropPos = {0, 1},
 
     -- The slot for the spade
     spadeSlot = 0,
