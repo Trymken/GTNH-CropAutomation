@@ -64,7 +64,6 @@ local function restockStick()
     robot.select(selectedSlot)
 end
 
-
 local function dumpFilterInventory(pos, useItem, itemName)
     local selectedSlot = robot.select()
     gps.go(pos)
@@ -72,7 +71,7 @@ local function dumpFilterInventory(pos, useItem, itemName)
     for i=1, (robot.inventorySize() + config.storageStopSlot) do
         os.sleep(0)
         local slot_item = inventory_controller.getStackInInternalSlot(i)
-        if slot_item ~= nil and not (useItem == true and slot_item.name ~= itemName) then
+        if slot_item ~= nil and not (useItem and (slot_item.name ~= itemName)) and not (config.collectOnlyTarget and (slot_item.crop == nil and slot_item.crop.name ~= database.getFarm()[1].name)) then
             robot.select(i)
             for e=1, inventory_controller.getInventorySize(sides.down) do
                 if (robot.count(i) > 0) then
@@ -146,7 +145,7 @@ local function deweed()
 end
 
 
-local function harvest()
+local function harvest(targetCrop)
     if fullInventory() then
         gps.save()
         dumpInventory()

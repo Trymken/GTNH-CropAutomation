@@ -14,6 +14,8 @@ local config = {
     keepMutations = false,
     -- Stat-up crops during autoTier (Very Slow)
     statWhileTiering = false,
+    -- Collect only targetCrop in the seed storage
+    collectOnlyTarget = true,
 
     -- Minimum tier for the working farm during autoTier
     autoTierThreshold = 13,

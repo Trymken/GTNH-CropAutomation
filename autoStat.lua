@@ -102,8 +102,6 @@ end
 local function statOnce(firstRun)
     for slot=1, config.workingFarmArea, 1 do
 
-        
-
         -- Terminal Condition
         if #database.getStorage() >= config.storageFarmArea then
             print('autoStat: Storage Full!')
@@ -163,6 +161,7 @@ local function main()
     -- Loop
     while statOnce(false) do
         action.restockAll()
+        
     end
 
     -- Terminated Early

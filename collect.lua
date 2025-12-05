@@ -97,6 +97,8 @@ local function collectMain(args)
         end
     end
 
+    action.charge()
+
     events.unhookEvents()
     print('Collect complete!')
 end

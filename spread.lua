@@ -77,6 +77,7 @@ local function checkParent(slot, crop)
             action.deweed()
             database.updateFarm(slot, {isCrop=true, name='emptyCrop'})
         end
+        database.updateFarm(slot, crop)
     end
 end
 
