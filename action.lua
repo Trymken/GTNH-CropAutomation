@@ -164,7 +164,7 @@ local function deweed()
 end
 
 
-local function harvest(targetCrop)
+local function harvest()
     if fullInventory() then
         gps.save()
         dumpInventory()
