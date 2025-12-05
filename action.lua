@@ -42,13 +42,10 @@ local function stopProgram(msg)
     os.exit(0)
 end
 
-local function getTargetCrop()
-    if database.getFarm()[1] == nil then
-        gps.go(config.targetCropPos)
-        local crop = scanner.scan()
-        database.updateFarm(1, crop)
-    end
-    return database.getFarm()[1]
+local function updateTargetCrop()
+    gps.go(config.targetCropPos)
+    local crop = scanner.scan()
+    database.updateFarm(1, crop)
 end
 
 
@@ -77,7 +74,7 @@ end
 local function isTargetCrop(slot)
     if (slot ~= nil) then
         if slot.crop ~= nil then
-            if (slot.crop.name == getTargetCrop().name) then
+            if (slot.crop.name == database.getFarm()[1].name) then
                 return true
             end
         end
@@ -99,7 +96,7 @@ local function dumpFilterInventory(pos, useItem, itemName, onlyTarget)
             isTarget = isTargetCrop(slot_item)
         end
 
-        if slot_item ~= nil and not (useItem and (slot_item.name ~= itemName) and isTarget) then
+        if slot_item ~= nil and not (useItem and (slot_item.name ~= itemName)) and isTarget then
             robot.select(i)
             for e=1, inventory_controller.getInventorySize(sides.down) do
                 if (robot.count(i) > 0) then
@@ -298,6 +295,7 @@ local function initWork()
     events.hookEvents()
     charge()
     database.resetStorage()
+    updateTargetCrop()
     primeBinder()
     restockAll()
 end
