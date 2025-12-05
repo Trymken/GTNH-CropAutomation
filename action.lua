@@ -86,20 +86,20 @@ local function isTargetCrop(slot)
 end
 
 
-local function dumpFilterInventory(pos, useItem, itemName)
+local function dumpFilterInventory(pos, useItem, itemName, onlyTarget)
     local selectedSlot = robot.select()
-    local onlyTarget = true
+    local isTarget = true
     gps.go(pos)
 
     for i=1, (robot.inventorySize() + config.storageStopSlot) do
         os.sleep(0)
         local slot_item = inventory_controller.getStackInInternalSlot(i)
         
-        if (config.collectOnlyTarget) then
-            onlyTarget = isTargetCrop(slot_item)
+        if (onlyTarget) then
+            isTarget = isTargetCrop(slot_item)
         end
 
-        if slot_item ~= nil and not (useItem and (slot_item.name ~= itemName)) and onlyTarget then
+        if slot_item ~= nil and not (useItem and (slot_item.name ~= itemName) and isTarget) then
             robot.select(i)
             for e=1, inventory_controller.getInventorySize(sides.down) do
                 if (robot.count(i) > 0) then
@@ -116,9 +116,9 @@ end
 
 
 function dumpInventory()
-    dumpFilterInventory(config.seedStoragePos, true, 'IC2:itemCropSeed')
-    dumpFilterInventory(config.stickContainerPos, true, 'IC2:blockCrop')
-    dumpFilterInventory(config.storagePos, false, '')
+    dumpFilterInventory(config.seedStoragePos, true, 'IC2:itemCropSeed', config.collectOnlyTarget)
+    dumpFilterInventory(config.stickContainerPos, true, 'IC2:blockCrop', false)
+    dumpFilterInventory(config.storagePos, false, '', false)
 end
 
 
