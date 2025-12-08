@@ -166,12 +166,10 @@ local function getSeeds()
     return seeds
 end
 
-
 local function isCorrectSeed(seed)
     seed = string.lower(seed)
     return seeds[string.gsub(seed, '%s+', '')] ~= nil
 end
-
 
 local function isEnoughStats(crop)
     return not (crop.gr > 23 or crop.ga > 31 or crop.re > 2)

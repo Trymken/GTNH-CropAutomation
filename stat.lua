@@ -87,7 +87,7 @@ local function checkParent(slot, crop, firstRun, variables)
             action.deweed()
             database.updateFarm(slot, {isCrop=true, name='emptyCrop'})
             if not firstRun then
-                updateLowest()
+                updateLowest(variables)
             end
         end
     end
