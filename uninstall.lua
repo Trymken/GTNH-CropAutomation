@@ -2,6 +2,7 @@ local shell = require('shell')
 local scripts = {
     'setup.lua',
     'spread.lua',
+    'seeds.lua',
     'collect.lua',
     'stat.lua',
     'action.lua',

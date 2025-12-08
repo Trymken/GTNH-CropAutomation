@@ -4,6 +4,7 @@ local branch
 local repo
 local scripts = {
     'spread.lua',
+    'seeds.lua',
     'collect.lua',
     'stat.lua',
     'action.lua',
