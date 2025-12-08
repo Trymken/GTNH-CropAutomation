@@ -35,12 +35,15 @@ end
 
 local function stopProgram(msg)
     print(msg)
-    cleanUp()
+    if config.cleanUp then
+        cleanUp()
+    end
     dumpInventory()
     charge()
     print("The program has stopped!")
     os.exit(0)
 end
+
 
 local function updateTargetCrop()
     gps.go(config.targetCropPos)
