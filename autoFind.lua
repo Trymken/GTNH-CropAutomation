@@ -23,7 +23,7 @@ local function checkChild(slot, crop, targetCrop)
         elseif crop.name == seeds.getSeedName(targetCrop) then
 
             if seeds.isEnoughStats(crop) then
-                action.transplant(gps.workingSlotToPos(slot), gps.go(config.targetCropPos))
+                action.transplant(gps.workingSlotToPos(slot), config.targetCropPos)
                 action.placeCropStick(2)
                 return true
 
@@ -56,6 +56,11 @@ local function findSeed(targetCrop)
     local isFound = false
     while (not isFound) do
     
+        if events.needExit() then
+            print('autoFind: Received Exit Command!')
+            return false
+        end
+
         for slot=1, config.workingFarmArea, 1 do
             if events.needExit() then
                 print('autoFind: Received Exit Command!')
@@ -68,7 +73,7 @@ local function findSeed(targetCrop)
             if slot % 2 == 0 then
                 if checkChild(slot, crop, targetCrop) then
                     isFound = true
-                    break
+                    return true
                 end
             else
                 checkParent(slot, crop)
@@ -90,8 +95,9 @@ local function main(args)
     if seeds.isCorrectSeed(args[1]) then
         action.initWork()
         print(string.format('autoFind: Target seed %s', args[1]))
-        findSeed(args[1])
-        stat.statMain(true, false)
+        if findSeed(args[1]) then
+            stat.statMain(true, false)
+        end
     else
         print(string.format('Incorrect seed %s, maybe you made a typo', args[1]))
     end
