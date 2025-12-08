@@ -7,52 +7,62 @@ local events = require('events')
 
 -- ===================== FUNCTIONS ======================
 
-local function findEmpty()
+local function updateLowest(variables)
     local farm = database.getFarm()
+    variables.lowestStat = 99
+    variables.lowestStatSlot = 0
 
+    -- Find lowest stat slot
     for slot=1, config.workingFarmArea, 2 do
         local crop = farm[slot]
-        if crop ~= nil and (crop.name == 'air' or crop.name == 'emptyCrop') then
-            return slot
+        if crop.isCrop then
+
+            if crop.name == 'air' or crop.name == 'emptyCrop' then
+                variables.lowestStat = 0
+                variables.lowestStatSlot = slot
+                break
+
+            elseif crop.name ~= variables.targetCrop then
+                local stat = crop.gr + crop.ga - crop.re - 2
+                if stat < variables.lowestStat then
+                    variables.lowestStat = stat
+                    variables.lowestStatSlot = slot
+                end
+
+            else
+                local stat = crop.gr + crop.ga - crop.re
+                if stat < variables.lowestStat then
+                    variables.lowestStat = stat
+                    variables.lowestStatSlot = slot
+                end
+            end
         end
     end
-    return nil
 end
 
 
-local function checkChild(slot, crop, targetCrop)
+local function checkChild(slot, crop, firstRun, variables)
     if crop.isCrop and crop.name ~= 'emptyCrop' then
 
         if crop.name == 'air' then
             action.placeCropStick(2)
 
-        elseif scanner.isWeed(crop, 'storage') then
+        elseif scanner.isWeed(crop, 'working') then
             action.deweed()
             action.placeCropStick()
 
-        elseif crop.name == targetCrop[0] then
+        elseif firstRun then
+            return
+
+        elseif crop.name == variables.targetCrop then
             local stat = crop.gr + crop.ga - crop.re
-            local emptySlot = findEmpty()
-            -- Make sure no parent on the working farm is empty
-            if stat >= config.autoStatThreshold and emptySlot ~= nil and crop.gr <= config.workingMaxGrowth and crop.re <= config.workingMaxResistance then
-                action.transplant(gps.workingSlotToPos(slot), gps.workingSlotToPos(emptySlot))
+
+            if stat > variables.lowestStat then
+                action.transplant(gps.workingSlotToPos(slot), gps.workingSlotToPos(variables.lowestStatSlot))
                 action.placeCropStick(2)
-                database.updateFarm(emptySlot, crop)
+                database.updateFarm(variables.lowestStatSlot, crop)
+                updateLowest(variables)
 
-            -- No parent is empty, put in storage
-            elseif stat >= config.autoSpreadThreshold then
-
-                if config.useStorageFarm then
-                    action.transplant(gps.workingSlotToPos(slot), gps.storageSlotToPos(database.nextStorageSlot()))
-                    database.addToStorage(crop)
-                    action.placeCropStick(2)
-
-                elseif crop.size >= crop.max - 1 then
-                    action.harvest()
-                    action.placeCropStick(2)
-                end
-
-            -- Stats are not high enough
             else
                 action.deweed()
                 action.placeCropStick()
@@ -71,35 +81,38 @@ local function checkChild(slot, crop, targetCrop)
 end
 
 
-local function checkParent(slot, crop)
+local function checkParent(slot, crop, firstRun, variables)
     if crop.isCrop and crop.name ~= 'air' and crop.name ~= 'emptyCrop' then
         if scanner.isWeed(crop, 'working') then
             action.deweed()
             database.updateFarm(slot, {isCrop=true, name='emptyCrop'})
+            if not firstRun then
+                updateLowest()
+            end
         end
     end
 end
 
 -- ====================== THE LOOP ======================
 
-local function spreadOnce(firstRun, breedRound, targetCrop)
+local function statOnce(firstRun, variables)
     for slot=1, config.workingFarmArea, 1 do
 
         -- Terminal Condition
-        if breedRound > config.maxBreedRound then
-            print('autoSpread: Max Breeding Round Reached!')
+        if #database.getStorage() >= config.storageFarmArea then
+            print('autoStat: Storage Full!')
             return false
         end
 
         -- Terminal Condition
-        if #database.getStorage() >= config.storageFarmArea then
-            print('autoSpread: Storage Full!')
+        if variables.lowestStat >= config.autoStatThreshold then
+            print('autoStat: Minimum Stat Threshold Reached!')
             return false
         end
 
         -- Terminal Condition
         if events.needExit() then
-            print('autoSpread: Received Exit Command!')
+            print('autoStat: Received Exit Command!')
             return false
         end
 
@@ -112,15 +125,15 @@ local function spreadOnce(firstRun, breedRound, targetCrop)
         if firstRun then
             database.updateFarm(slot, crop)
             if slot == 1 then
-                targetCrop[0] = database.getFarm()[1].name
-                print(string.format('autoSpread: Target %s', targetCrop[0]))
+                variables.targetCrop = database.getFarm()[1].name
+                print(string.format('autoStat: Target %s', variables.targetCrop))
             end
         end
 
         if slot % 2 == 0 then
-            checkChild(slot, crop, targetCrop)
+            checkChild(slot, crop, firstRun, variables)
         else
-            checkParent(slot, crop)
+            checkParent(slot, crop, firstRun, variables)
         end
 
         if action.needCharge() then
@@ -132,23 +145,27 @@ end
 
 -- ======================== MAIN ========================
 
-local function spreadMain(init, unhook)
-    local breedRound = 0
-    local targetCrop = {''}
-    
+local function statMain(init, unhook)
+    local variables = {
+        lowestStat = 0,
+        lowestStatSlot = 0,
+        targetCrop = ''
+    }
+
     if init then
         action.initWork()
     end
-    print('autoSpread: Scanning Farm')
+    print('autoStat: Scanning Farm')
 
     -- First Run
-    spreadOnce(true, breedRound, targetCrop)
+    statOnce(true, variables)
     action.restockAll()
+    updateLowest(variables)
 
     -- Loop
-    while spreadOnce(false, breedRound, targetCrop) do
-        breedRound = breedRound + 1
+    while statOnce(false, variables) do
         action.restockAll()
+        
     end
 
     -- Terminated Early
@@ -165,14 +182,11 @@ local function spreadMain(init, unhook)
     if unhook then
         events.unhookEvents()
     end
-    print('autoSpread: Complete!')
+    print('autoStat: Complete!')
 end
 
 
+
 return {
-    spreadMain = spreadMain,
-    spreadOnce = spreadOnce,
-    checkParent = checkParent,
-    checkChild = checkChild,
-    findEmpty = findEmpty
+    statMain = statMain
 }

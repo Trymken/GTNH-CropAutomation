@@ -5,6 +5,7 @@ local repo
 local scripts = {
     'spread.lua',
     'collect.lua',
+    'stat.lua',
     'action.lua',
     'database.lua',
     'events.lua',
@@ -15,6 +16,7 @@ local scripts = {
     'autoTier.lua',
     'autoSpread.lua',
     'autoCollect.lua',
+    'autoFind.lua',
     'collectOnce.lua',
     'uninstall.lua'
 }

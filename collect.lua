@@ -26,6 +26,7 @@ local function findSeedCellStorage()
 end
 
 
+
 local function collectSeeds()
     local seedCell = 1
     local harvestedCrop = 1
@@ -62,7 +63,7 @@ local function collectSeeds()
 
             gps.go(gps.storageSlotToPos(slot))
             local crop = scanner.scan()
-            if crop.isCrop and crop.name ~= 'air' and crop.size >= (crop.max - 1) then
+            if crop.isCrop and crop.name ~= 'air' and crop.size >= crop.max then
                 action.harvest()
                 harvestedCrop = harvestedCrop + 1
             end
