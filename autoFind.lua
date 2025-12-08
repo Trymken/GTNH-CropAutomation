@@ -80,6 +80,8 @@ local function findSeed(targetCrop)
 
         end
 
+        action.restockAll()
+
     end
 end
 
