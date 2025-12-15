@@ -22,7 +22,7 @@ local function updateLowest(variables)
                 variables.lowestStatSlot = slot
                 break
 
-            elseif crop.name ~= variables.targetCrop then
+            elseif crop.name == variables.targetCrop then
                 local stat = crop.gr + crop.ga - crop.re - 2
                 if stat < variables.lowestStat then
                     variables.lowestStat = stat
@@ -89,7 +89,11 @@ local function checkParent(slot, crop, firstRun, variables)
             if not firstRun then
                 updateLowest(variables)
             end
+        else
+            database.updateFarm(slot, crop)
         end
+    else
+        database.updateFarm(slot, crop)
     end
 end
 
@@ -165,7 +169,6 @@ local function statMain(init, unhook)
     -- Loop
     while statOnce(false, variables) do
         action.restockAll()
-        
     end
 
     -- Terminated Early

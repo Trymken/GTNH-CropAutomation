@@ -1,14 +1,9 @@
-local component = require('component')
 local action = require('action')
-local robot = require('robot')
-local sides = require('sides')
-local database = require('database')
 local gps = require('gps')
 local config = require('config')
 local scanner = require('scanner')
 local events = require('events')
 local spread = require('spread')
-local inventory_controller = component.inventory_controller
 
 
 local function findSeedCellStorage()
@@ -26,13 +21,13 @@ local function findSeedCellStorage()
 end
 
 
-
 local function collectSeeds()
     local seedCell = 1
     local harvestedCrop = 1
     local isFirstRun = true
 
     while(true) do
+
         local slot = 1
 
         if action.needCharge() then
@@ -46,6 +41,7 @@ local function collectSeeds()
         end
 
         isFirstRun = true
+
 
         while slot <= config.storageFarmArea do
 

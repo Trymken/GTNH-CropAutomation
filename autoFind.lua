@@ -25,6 +25,7 @@ local function checkChild(slot, crop, targetCrop)
             if seeds.isEnoughStats(crop) then
                 action.transplant(gps.workingSlotToPos(slot), config.targetCropPos)
                 action.placeCropStick(2)
+                database.updateFarm(1, crop)
                 return true
 
             else
@@ -47,7 +48,11 @@ local function checkParent(slot, crop)
         if scanner.isWeed(crop, 'working') then
             action.deweed()
             database.updateFarm(slot, {isCrop=true, name='emptyCrop'})
+        else
+            database.updateFarm(slot, crop)
         end
+    else
+        database.updateFarm(slot, crop)
     end
 end
 
@@ -94,7 +99,7 @@ end
 local function main(args)
     if seeds.isCorrectSeed(args[1]) then
         action.initWork()
-        print(string.format('autoFind: Target seed %s', args[1]))
+        print(string.format('autoFind: Target seed %s', seeds.getSeedName(args[1])))
         if findSeed(args[1]) then
             stat.statMain(true, false)
         end
