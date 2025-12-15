@@ -17,18 +17,10 @@ local function updateLowest(variables)
         local crop = farm[slot]
         if crop.isCrop then
 
-            if crop.name == 'air' or crop.name == 'emptyCrop' then
+            if crop.name == 'air' or crop.name == 'emptyCrop' or crop.name ~= variables.targetCrop then
                 variables.lowestStat = 0
                 variables.lowestStatSlot = slot
                 break
-
-            elseif crop.name == variables.targetCrop then
-                local stat = crop.gr + crop.ga - crop.re - 2
-                if stat < variables.lowestStat then
-                    variables.lowestStat = stat
-                    variables.lowestStatSlot = slot
-                end
-
             else
                 local stat = crop.gr + crop.ga - crop.re
                 if stat < variables.lowestStat then
